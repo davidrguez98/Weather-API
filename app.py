@@ -1,23 +1,29 @@
 import requests
+from requests.exceptions import RequestException
 from datetime import datetime
 
-def get_weather_data(location, days_range):
-
-    base_url = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline"
-    key = "AZ94WHHAAH8V95MBDN63SU5DK"
-
-    today = datetime.now().strftime("%Y-%m-%d")
+def get_weather_data(location, days_range): #Se conecta a la API y devolver los datos JSON
     
-    location_url = f"{base_url}/{location}/{today}/next{days_range}days?unitGroup=metric&key={key}" #Tengo que añadir el día de mañana e intentar conseguir el rango
-    
-    weather_data = requests.get(location_url).json()
+        base_url = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline"
+        key = "AZ94WHHAAH8V95MBDN63SU5DK"
 
-    return weather_data
+        today = datetime.now().strftime("%Y-%m-%d")
+        
+        location_url = f"{base_url}/{location}/{today}/next{days_range}days?unitGroup=metric&key={key}"
 
-def format_data(weather_data):
+        try:    
+            weather_data = requests.get(location_url).json()
+            return weather_data
+        
+        except RequestException:
+            
+            print("Error: No se pudo conectar con el servidor. Verifica tu conexión a internet.")
+            return None
+
+def format_data(weather_data): #Transforma en un diccionario el JSON
 
     report = {
-        "location": weather_data.get("address"),
+        "location": weather_data.get("resolvedAddress"),
         "information": []
     }
 
@@ -25,9 +31,9 @@ def format_data(weather_data):
 
         def rain():
             if day.get("precipprob") > 0:
-                return f"El porcentaje de probabilidad de precipitaciones es del {day.get("precipprob")}%"
+                return f"The probability of precipitation is {day.get("precipprob")}%"
             else:
-                return "Sin precipitaciones."
+                return "No precipitation"
 
         def date_format():
 
@@ -35,7 +41,7 @@ def format_data(weather_data):
             return datetime.strptime(date, "%Y-%m-%d").strftime("%d-%m-%Y")
 
         day_info = {
-            "date": date_format(),
+            "Date": date_format(),
             "Average temp.": round(day.get("temp"), 1),
             "Max temp.": round(day.get("tempmax"), 1),
             "Min temp.": round(day.get("tempmin"), 1),
@@ -46,23 +52,41 @@ def format_data(weather_data):
 
     return report
 
-def display_report(report):
+def display_report(report): #Imprime el informe meteorológico
 
-    print(f"\nMeteorología en {report["location"]}:")
+    print(f"\nMETEOROLOGY IN {report["location"].upper()}:")
     for day in report["information"]:
-        print(f"date: {day["date"]}")
+        print(f"Date: {day["Date"]}")
         print(f"Average temp.: {day["Average temp."]}°C")
         print(f"Max temp.: {day["Max temp."]}°C")
         print(f"Min temp.: {day["Min temp."]}°C")
-        print(f"Precipitation probability: {day["Precipitation probability"]}°C")
+        print(f"Precipitation probability: {day["Precipitation probability"]}\n")
 
-def main():
+def main(): #Donde se pide la localización y el rango de días. Ejecuta el programa
 
-    location = input("Escribe una ciudad: ").capitalize()
-    days_range = int(input("Rango de días de previsión: ")) - 1
-    days_range_str = str(days_range)
+    try:
+        location = input("Escribe una ciudad: ").capitalize()
+    except ValueError:
+        print("Error: Escribe un nombre de ciudad válida.")
+        return
+    
+    try:
+        days_range = int(input("Rango de días de previsión: ")) - 1
+        if days_range <= 0:
+            print("Error: El rango de días debe de ser positivo")
+            return
+        else:
+            days_range_str = str(days_range)
+    except ValueError:
+        print("Error: Escribe un número válido de días.")
+        return
 
     weather_data = get_weather_data(location, days_range_str)
+
+    if weather_data is None:
+        print("Error: No se pudo obtener información sobre el clima.")
+        return
+
     report = format_data(weather_data)
     display_report(report)
 
