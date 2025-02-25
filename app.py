@@ -7,14 +7,16 @@ def Weather_report(location):
     key = "AZ94WHHAAH8V95MBDN63SU5DK"
 
     today = datetime.now().strftime("%Y-%m-%d")
+    range_days = input("Rango de días de previsión: ")
+    print(type(range_days))
     
-    location_url = f"{base_url}/{location}/{today}/next2days?unitGroup=metric&key={key}" #Tengo que añadir el día de mañana e intentar conseguir el rango
+    location_url = f"{base_url}/{location}/{today}/next{range_days}days?unitGroup=metric&key={key}" #Tengo que añadir el día de mañana e intentar conseguir el rango
     
     weather_data = requests.get(location_url).json()
 
     report = {
-        "Localizacion": weather_data.get("address"),
-        "Información": []
+        "location": weather_data.get("address"),
+        "information": []
     }
 
     for day in weather_data["days"]:
@@ -31,22 +33,24 @@ def Weather_report(location):
             return datetime.strptime(date, "%Y-%m-%d").strftime("%d-%m-%Y")
 
         day_info = {
-            "Fecha": date_format(),
-            "Temp. media": round(day.get("temp"), 1),
-            "Temp. maxima": round(day.get("tempmax"), 1),
-            "Temp. minima": round(day.get("tempmin"), 1),
-            "Precipitaciones": rain()
+            "date": date_format(),
+            "Average temp.": round(day.get("temp"), 1),
+            "Max temp.": round(day.get("tempmax"), 1),
+            "Min temp.": round(day.get("tempmin"), 1),
+            "Precipitation probability": rain()
         }
 
-        report["Información"].append(day_info)
+        report["information"].append(day_info)
 
-    print(f"\nMeteorología en {report["Localizacion"]}:")
-    for day in report["Información"]:
-        print(f"Fecha: {day["Fecha"]}")
-        print(f"Temp. media: {day["Temp. media"]}")
-        print(f"Temp. maxima: {day["Temp. maxima"]}")
-        print(f"Temp. minima: {day["Temp. minima"]}")
-        print(f"Precipitaciones: {day["Precipitaciones"]}")
+
+
+    print(f"\nMeteorología en {report["location"]}:")
+    for day in report["information"]:
+        print(f"date: {day["date"]}")
+        print(f"Average temp.: {day["Average temp."]}°C")
+        print(f"Max temp.: {day["Max temp."]}°C")
+        print(f"Min temp.: {day["Min temp."]}°C")
+        print(f"Precipitation probability: {day["Precipitation probability"]}°C")
 
 
 location = input("Escribe una ciudad: ").capitalize()
