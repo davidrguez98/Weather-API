@@ -12,9 +12,28 @@ def get_weather_data(location, days_range): #Se conecta a la API y devolver los 
         location_url = f"{base_url}/{location}/{today}/next{days_range}days?unitGroup=metric&key={key}"
 
         try:    
-            weather_data = requests.get(location_url).json()
-            return weather_data
-        
+            weather_data = requests.get(location_url)
+            
+            if weather_data.status_code == 400:
+                print("Error: Ciudad no encontrada.")
+                return None
+            if weather_data.status_code == 500:
+                print("Error: Problema con el servidor. Inténtelo más tarde.")
+                return None
+            
+            try:
+                weather_data = weather_data.json()
+
+                if not weather_data:
+                    print("Error: No se recibió información válida sobre el clima.")
+                    return None
+                
+                return weather_data
+            
+            except ValueError:
+                
+                print(f"Error: Ciudad no encontrada.")
+
         except RequestException:
             
             print("Error: No se pudo conectar con el servidor. Verifica tu conexión a internet.")
