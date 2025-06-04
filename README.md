@@ -1,41 +1,42 @@
-# Weather API ☀️🌧️
+# Weather Console App ☁️🌦️
 
-Proyecto backend que proporciona información meteorológica actual basada en la ubicación de una ciudad. Esta API está diseñada para ser consumida por aplicaciones frontend como [weather-web](https://github.com/davidrguez98/weather-web), facilitando datos actualizados de forma sencilla y estructurada.
+Aplicación de consola desarrollada en Python que permite consultar la previsión meteorológica de una ciudad durante un rango de días. Se conecta a la API de Visual Crossing y devuelve un informe detallado del tiempo, incluyendo temperatura media, máximas, mínimas y probabilidad de precipitaciones.
 
 ## 🧠 Descripción
 
-Este proyecto expone una API REST que conecta con un servicio externo de datos climáticos (OpenWeather) para devolver información como temperatura, sensación térmica, humedad, descripción del clima, entre otros. Se trata de un proyecto didáctico desarrollado como parte de mi formación en desarrollo backend.
+El usuario introduce una ciudad y un número de días de previsión (por ejemplo, 3 días), y el programa obtiene los datos meteorológicos reales desde la API externa. La información se muestra por consola de forma clara y estructurada, ideal como práctica de consumo de APIs, gestión de errores y estructuración de datos en Python.
 
 ## ⚙️ Funcionalidad
 
-- Endpoint para obtener el clima actual de una ciudad mediante su nombre.
-- Middleware para manejo de errores y validación de entrada.
-- Soporte para variables de entorno para proteger la clave de la API.
-- Respuestas formateadas de manera clara para su uso directo en interfaces de usuario.
+- Solicita al usuario una ciudad y número de días.
+- Realiza una petición a la API de Visual Crossing.
+- Gestiona errores comunes (ciudad no encontrada, problemas de red, etc.).
+- Muestra la previsión día por día: temperatura media, máxima, mínima y precipitaciones.
 
 ## 🛠️ Tecnologías usadas
 
-- **Node.js** como entorno de ejecución.
-- **Express** para la creación de la API.
-- **Axios** para la realización de peticiones HTTP.
-- **dotenv** para gestión de variables de entorno.
-- **Cors** para permitir peticiones desde frontend.
+- **Python 3.10+**
+- **requests** para consumir la API externa.
+- **datetime** para formatear las fechas.
+- **API de Visual Crossing** como fuente de datos meteorológicos.
 
 ## 📁 Estructura del proyecto
 
 ```
 Weather-API/
 │
-├── controllers/         # Lógica de negocio y procesamiento de datos
-├── routes/              # Definición de endpoints
-├── utils/               # Funciones auxiliares (formateo, validaciones)
-├── .env.example         # Ejemplo de variables de entorno necesarias
-├── index.js             # Punto de entrada de la aplicación
-├── package.json         # Dependencias y scripts
-└── README.md            # Información del proyecto
+├── backend/
+│   └── weather_functions.py    # Lógica principal de conexión, formateo y visualización
+│
+├── tests/
+│   └── tests.py                # Tests unitarios para funciones de backend (si aplica)
+│
+├── main.py                     # Punto de entrada: ejecuta el programa desde consola
+├── requirements.txt            # Librerías necesarias
+└── README.md                   # Documentación del proyecto
 ```
 
-## 🚀 Instalación y puesta en marcha
+## 🚀 Instalación y ejecución
 
 1. Clona el repositorio:
    ```
@@ -43,22 +44,38 @@ Weather-API/
    cd Weather-API
    ```
 
-2. Instala las dependencias:
+2. Crea y activa un entorno virtual (opcional pero recomendado):
    ```
-   npm install
-   ```
-
-3. Crea un archivo `.env` en la raíz del proyecto y añade tu clave de la API de OpenWeather. Puedes usar el archivo `.env.example` como referencia:
-   ```
-   API_KEY=tu_clave_de_openweather
+   python -m venv venv
+   source venv/bin/activate  # En Windows: venv\Scripts\activate
    ```
 
-4. Inicia el servidor:
+3. Instala las dependencias:
    ```
-   node index.js
+   pip install -r requirements.txt
    ```
 
-   El servidor se iniciará en `http://localhost:3000` (o el puerto que hayas configurado).
+4. Ejecuta el programa:
+   ```
+   python main.py
+   ```
+
+   El programa te pedirá que escribas una ciudad y un rango de días.
+
+## 📝 Ejemplo de uso
+
+```
+Escribe una ciudad: Madrid
+Rango de días de previsión: 1
+
+METEOROLOGY IN MADRID:
+Date: 04-06-2025
+Average temp.: 24.6°C
+Max temp.: 28.2°C
+Min temp.: 18.4°C
+Precipitation probability: The probability of precipitation is 20%
+...
+```
 
 ## 🤝 Contacto
 
